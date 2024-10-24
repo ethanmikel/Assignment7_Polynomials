@@ -110,27 +110,37 @@ class LinkedList:
     # Insert the term with the coefficient coeff and exponent exp into the polynomial.
     # If a term with that exponent already exists, add the coefficients together.
     # You must keep the terms in descending order by exponent.
+    # Update in insert_term method
     def insert_term(self, coeff, exp):
-       if coeff == 0:
+        if coeff == 0:
             return
-        
-        new_node = Node(coeff, exp)
 
+        new_node = Node(coeff, exp)
+        
         if self.head is None or exp > self.head.exp:
             new_node.next = self.head
             self.head = new_node
         else:
             current = self.head
-            while current.next and current.next.exp > exp:
+            prev = None
+            while current and current.exp > exp:
+                prev = current
                 current = current.next
 
-            if current.exp == exp:
+            if current and current.exp == exp:
                 current.coeff += coeff
                 if current.coeff == 0:
-                    self._delete_node(current)
+                    if prev:
+                        prev.next = current.next
+                    else:
+                        self.head = current.next
             else:
-                new_node.next = current.next
-                current.next = new_node
+                new_node.next = current
+                if prev:
+                    prev.next = new_node
+                else:
+                    self.head = new_node
+
 
     # Add a polynomial p to the polynomial and return the resulting polynomial as a new linked list.
     def add(self, p):
@@ -162,10 +172,10 @@ class LinkedList:
             while p2:
                 temp.insert_term(p1.coeff * p2.coeff, p1.exp + p2.exp)
                 p2 = p2.next
-            
-            result = result.add(temp)
+
+            result = result.add(temp)  # Add intermediate result to the final product.
             p1 = p1.next
-        
+
         return result
 
     # Return a string representation of the polynomial.
@@ -182,44 +192,47 @@ class LinkedList:
             if coeff == 0:
                 current = current.next
                 continue
-            
+
             terms.append(f"({coeff}, {exp})")
 
             current = current.next
 
         return " + ".join(terms)
 
-
-
 def main():
-    poly1 = LinkedList()
-    num_terms1 = int(input("Enter the number of terms for the first polynomial: "))
-    for _ in range(num_terms1):
-        data = input("Enter terms for the first polynomial (coeff exp). Type 'end' to stop: ")
-        if data.strip().lower() == 'end':
+    print("Enter terms for the first polynomial (coeff exp). Type 'end' to stop.")
+    p1 = LinkedList()
+    while True:
+        data = input().strip()
+        if not data:
+            continue
+        if data.lower() == 'end':
             break
         try:
             coeff, exp = map(int, data.split())
-            poly1.insert_term(coeff, exp)
+            p1.insert_term(coeff, exp)
         except ValueError:
-            print("Invalid input. Please enter two integers separated by a space.")
-            continue
+            print("Invalid input. Please enter coefficients and exponents in the form 'coeff exp'.")
 
-    poly2 = LinkedList()
-    num_terms2 = int(input("Enter the number of terms for the second polynomial: "))
-    for _ in range(num_terms2):
-        data = input("Enter terms for the second polynomial (coeff exp). Type 'end' to stop: ")
-        if data.strip().lower() == 'end':
+    print("Enter terms for the second polynomial (coeff exp). Type 'end' to stop.")
+    p2 = LinkedList()
+    while True:
+        data = input().strip()
+        if not data:
+            continue
+        if data.lower() == 'end':
             break
         try:
             coeff, exp = map(int, data.split())
-            poly2.insert_term(coeff, exp)
+            p2.insert_term(coeff, exp)
         except ValueError:
-            print("Invalid input. Please enter two integers separated by a space.")
-            continue
+            print("Invalid input. Please enter coefficients and exponents in the form 'coeff exp'.")
 
-    result_add = poly1.add(poly2)
-    result_mult = poly1.mult(poly2)
+    sum_result = p1.add(p2)
+    product_result = p1.mult(p2)
+
+    print("Sum of polynomials:", sum_result)
+    print("Product of polynomials:", product_result)
 
 if __name__ == "__main__":
     main()
