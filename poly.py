@@ -16,6 +16,8 @@ UT EID 1: kc45736
 UT EID 2: etm693
 """
 
+import os
+
 class Node:
     """
     A modified version of the Node class for linked lists (using proper class
