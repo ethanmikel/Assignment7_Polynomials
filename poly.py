@@ -111,11 +111,11 @@ class LinkedList:
     # If a term with that exponent already exists, add the coefficients together.
     # You must keep the terms in descending order by exponent.
     def insert_term(self, coeff, exp):
-        if coeff == 0:
+       if coeff == 0:
             return
-
-        new_node = Node(coeff, exp)
         
+        new_node = Node(coeff, exp)
+
         if self.head is None or exp > self.head.exp:
             new_node.next = self.head
             self.head = new_node
@@ -162,10 +162,10 @@ class LinkedList:
             while p2:
                 temp.insert_term(p1.coeff * p2.coeff, p1.exp + p2.exp)
                 p2 = p2.next
-
-            result = result.add(temp)  # Add intermediate result to the final product.
+            
+            result = result.add(temp)
             p1 = p1.next
-
+        
         return result
 
     # Return a string representation of the polynomial.
@@ -192,29 +192,34 @@ class LinkedList:
 
 
 def main():
-    print("Enter terms for the first polynomial (coeff exp). Type 'end' to stop.")
-    p1 = LinkedList()
-    while True:
-        data = input()
-        if data.lower() == 'end':
+    poly1 = LinkedList()
+    num_terms1 = int(input("Enter the number of terms for the first polynomial: "))
+    for _ in range(num_terms1):
+        data = input("Enter terms for the first polynomial (coeff exp). Type 'end' to stop: ")
+        if data.strip().lower() == 'end':
             break
-        coeff, exp = map(int, data.split())
-        p1.insert_term(coeff, exp)
+        try:
+            coeff, exp = map(int, data.split())
+            poly1.insert_term(coeff, exp)
+        except ValueError:
+            print("Invalid input. Please enter two integers separated by a space.")
+            continue
 
-    print("Enter terms for the second polynomial (coeff exp). Type 'end' to stop.")
-    p2 = LinkedList()
-    while True:
-        data = input()
-        if data.lower() == 'end':
+    poly2 = LinkedList()
+    num_terms2 = int(input("Enter the number of terms for the second polynomial: "))
+    for _ in range(num_terms2):
+        data = input("Enter terms for the second polynomial (coeff exp). Type 'end' to stop: ")
+        if data.strip().lower() == 'end':
             break
-        coeff, exp = map(int, data.split())
-        p2.insert_term(coeff, exp)
+        try:
+            coeff, exp = map(int, data.split())
+            poly2.insert_term(coeff, exp)
+        except ValueError:
+            print("Invalid input. Please enter two integers separated by a space.")
+            continue
 
-    sum_result = p1.add(p2)
-    product_result = p1.mult(p2)
-
-    print("Sum of polynomials:", sum_result)
-    print("Product of polynomials:", product_result)
+    result_add = poly1.add(poly2)
+    result_mult = poly1.mult(poly2)
 
 if __name__ == "__main__":
     main()
