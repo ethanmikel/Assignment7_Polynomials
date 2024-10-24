@@ -171,7 +171,7 @@ class LinkedList:
     # Return a string representation of the polynomial.
     def __str__(self):
         if not self.head:
-            return "0"
+            return ""
 
         terms = []
         current = self.head
@@ -179,16 +179,16 @@ class LinkedList:
             coeff = current.coeff
             exp = current.exp
 
-            if exp == 0:
-                terms.append(f"{coeff}")
-            elif exp == 1:
-                terms.append(f"{coeff}x")
-            else:
-                terms.append(f"{coeff}x^{exp}")
+            if coeff == 0:
+                current = current.next
+                continue
+            
+            terms.append(f"({coeff}, {exp})")
 
             current = current.next
 
-        return " + ".join(terms).replace("+ -", "- ")
+        return " + ".join(terms)
+
 
 
 def main():
@@ -215,6 +215,6 @@ def main():
 
     print("Sum of polynomials:", sum_result)
     print("Product of polynomials:", product_result)
-    
+
 if __name__ == "__main__":
     main()
