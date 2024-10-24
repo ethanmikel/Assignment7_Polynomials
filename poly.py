@@ -194,41 +194,39 @@ class LinkedList:
         return " + ".join(terms)
 
 def main():
-    print("Enter terms for the first polynomial (coeff exp). Type 'end' to stop.")
-    p1 = LinkedList()
-    while True:
-        try:
-            data = input().strip()
-            if data.lower() == 'end':
-                break
-            coeff, exp = map(int, data.split())
-            p1.insert_term(coeff, exp)
-        except ValueError:
-            print("Invalid input. Please enter coefficients and exponents in the form 'coeff exp'.")
-        except EOFError:
-            print("\nInput ended unexpectedly. Please check your input source.")
-            return  # Exit if EOF is encountered unexpectedly
+    # Loop through all test files
+    for i in range(12):
+        input_file = f'test_{i}.in'
+        output_file = f'test_{i}.out'
+        
+        if os.path.exists(input_file):
+            print(f"Processing {input_file} -> {output_file}")
+            
+            try:
+                with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
+                    num_terms_p1 = int(infile.readline().strip())
+                    p1 = LinkedList()
+                    for _ in range(num_terms_p1):
+                        coeff, exp = map(int, infile.readline().strip().split())
+                        p1.insert_term(coeff, exp)
 
-    print("Enter terms for the second polynomial (coeff exp). Type 'end' to stop.")
-    p2 = LinkedList()
-    while True:
-        try:
-            data = input().strip()
-            if data.lower() == 'end':
-                break
-            coeff, exp = map(int, data.split())
-            p2.insert_term(coeff, exp)
-        except ValueError:
-            print("Invalid input. Please enter coefficients and exponents in the form 'coeff exp'.")
-        except EOFError:
-            print("\nInput ended unexpectedly. Please check your input source.")
-            return  # Exit if EOF is encountered unexpectedly
+                    num_terms_p2 = int(infile.readline().strip())
+                    p2 = LinkedList()
+                    for _ in range(num_terms_p2):
+                        coeff, exp = map(int, infile.readline().strip().split())
+                        p2.insert_term(coeff, exp)
 
-    sum_result = p1.add(p2)
-    product_result = p1.mult(p2)
+                    sum_result = p1.add(p2)
+                    product_result = p1.mult(p2)
 
-    print("Sum of polynomials:", sum_result)
-    print("Product of polynomials:", product_result)
+                    outfile.write("Sum of polynomials: " + str(sum_result) + "\n")
+                    outfile.write("Product of polynomials: " + str(product_result) + "\n")
+            
+            except Exception as e:
+                print(f"An error occurred while processing {input_file}: {e}")
+        
+        else:
+            print(f"{input_file} does not exist. Skipping.")
 
 if __name__ == "__main__":
     main()
