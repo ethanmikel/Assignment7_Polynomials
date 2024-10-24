@@ -97,20 +97,11 @@ class Node:
 
 class LinkedList:
     def __init__(self):
-        # You are also welcome to use a sentinel/dummy node!
-        # It is definitely recommended, which will we learn more
-        # about in class on Monday 10/21. If you choose to use
-        # a dummy node, you can comment out the self.head = None
-        # and comment in the below line. We use None to make sure
-        # if there is an error where you accidentally include the
-        # dummy node in your calculation, it will throw an error.
-        # self.dummy = Node(None, None)
         self.head = None
 
     # Insert the term with the coefficient coeff and exponent exp into the polynomial.
     # If a term with that exponent already exists, add the coefficients together.
     # You must keep the terms in descending order by exponent.
-    # Update in insert_term method
     def insert_term(self, coeff, exp):
         if coeff == 0:
             return
@@ -130,18 +121,18 @@ class LinkedList:
 
             if current and current.exp == exp:
                 current.coeff += coeff
+                # Remove term if its coefficient becomes zero
                 if current.coeff == 0:
                     if prev:
                         prev.next = current.next
                     else:
                         self.head = current.next
             else:
-                if coeff != 0:
-                    new_node.next = current
-                    if prev:
-                        prev.next = new_node
-                    else:
-                        self.head = new_node
+                new_node.next = current
+                if prev:
+                    prev.next = new_node
+                else:
+                    self.head = new_node
 
     # Add a polynomial p to the polynomial and return the resulting polynomial as a new linked list.
     def add(self, p):
@@ -156,9 +147,9 @@ class LinkedList:
                 result.insert_term(p2.coeff, p2.exp)
                 p2 = p2.next
             else:
-                combined_coeff = p1.coeff + p2.coeff
-                if combined_coeff != 0:
-                    result.insert_term(combined_coeff, p1.exp)
+                sum_coeff = p1.coeff + p2.coeff
+                if sum_coeff != 0:
+                    result.insert_term(sum_coeff, p1.exp)
                 p1, p2 = p1.next, p2.next
 
         return result
@@ -173,13 +164,10 @@ class LinkedList:
             p2 = p.head
 
             while p2:
-                product_coeff = p1.coeff * p2.coeff
-                product_exp = p1.exp + p2.exp
-                if product_coeff != 0:
-                    temp.insert_term(product_coeff, product_exp)
+                temp.insert_term(p1.coeff * p2.coeff, p1.exp + p2.exp)
                 p2 = p2.next
 
-            result = result.add(temp)
+            result = result.add(temp)  # Add intermediate result to the final product.
             p1 = p1.next
 
         return result
@@ -209,30 +197,32 @@ def main():
     print("Enter terms for the first polynomial (coeff exp). Type 'end' to stop.")
     p1 = LinkedList()
     while True:
-        data = input().strip()
-        if not data:
-            continue
-        if data.lower() == 'end':
-            break
         try:
+            data = input().strip()
+            if data.lower() == 'end':
+                break
             coeff, exp = map(int, data.split())
             p1.insert_term(coeff, exp)
         except ValueError:
             print("Invalid input. Please enter coefficients and exponents in the form 'coeff exp'.")
+        except EOFError:
+            print("\nInput ended unexpectedly. Please check your input source.")
+            return  # Exit if EOF is encountered unexpectedly
 
     print("Enter terms for the second polynomial (coeff exp). Type 'end' to stop.")
     p2 = LinkedList()
     while True:
-        data = input().strip()
-        if not data:
-            continue
-        if data.lower() == 'end':
-            break
         try:
+            data = input().strip()
+            if data.lower() == 'end':
+                break
             coeff, exp = map(int, data.split())
             p2.insert_term(coeff, exp)
         except ValueError:
             print("Invalid input. Please enter coefficients and exponents in the form 'coeff exp'.")
+        except EOFError:
+            print("\nInput ended unexpectedly. Please check your input source.")
+            return  # Exit if EOF is encountered unexpectedly
 
     sum_result = p1.add(p2)
     product_result = p1.mult(p2)
