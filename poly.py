@@ -116,7 +116,8 @@ class LinkedList:
             return
 
         new_node = Node(coeff, exp)
-        
+
+        # Handle the case for zero exponents
         if self.head is None or exp > self.head.exp:
             new_node.next = self.head
             self.head = new_node
@@ -129,6 +130,7 @@ class LinkedList:
 
             if current and current.exp == exp:
                 current.coeff += coeff
+                # Remove term if its coefficient becomes zero
                 if current.coeff == 0:
                     if prev:
                         prev.next = current.next
@@ -140,7 +142,6 @@ class LinkedList:
                     prev.next = new_node
                 else:
                     self.head = new_node
-
 
     # Add a polynomial p to the polynomial and return the resulting polynomial as a new linked list.
     def add(self, p):
@@ -155,7 +156,9 @@ class LinkedList:
                 result.insert_term(p2.coeff, p2.exp)
                 p2 = p2.next
             else:
-                result.insert_term(p1.coeff + p2.coeff, p1.exp)
+                sum_coeff = p1.coeff + p2.coeff
+                if sum_coeff != 0:
+                    result.insert_term(sum_coeff, p1.exp)
                 p1, p2 = p1.next, p2.next
 
         return result
