@@ -2,7 +2,7 @@
 Student information for this assignment:
 
 Replace <FULL NAME> with your name.
-On my/our honor, Kavya Chowti and Ethan Mikel, this
+On my/our honor, <KAVYA CHOWTI> and <ETHAN MIKEL>, this
 programming assignment is my own work and I have not provided this code to
 any other student.
 
@@ -16,7 +16,6 @@ UT EID 1: kc45736
 UT EID 2: etm693
 """
 
-import os
 
 class Node:
     """
@@ -98,84 +97,115 @@ class Node:
 
 
 class LinkedList:
+    """
+    Initializes the linked list head
+    """
     def __init__(self):
+        # You are also welcome to use a sentinel/dummy node!
+        # It is definitely recommended, which will we learn more
+        # about in class on Monday 10/21. If you choose to use
+        # a dummy node, you can comment out the self.head = None
+        # and comment in the below line. We use None to make sure
+        # if there is an error where you accidentally include the
+        # dummy node in your calculation, it will throw an error.
+        # self.dummy = Node(None, None)
         self.head = None
 
     # Insert the term with the coefficient coeff and exponent exp into the polynomial.
     # If a term with that exponent already exists, add the coefficients together.
     # You must keep the terms in descending order by exponent.
     def insert_term(self, coeff, exp):
+        """
+        Inserts the term with the coefficient coeff and exponent exp into the polynomial.
+        If a term with that exponent already exists, we add the coefficients together.
+        It also keeps the terms in descending order by exponent.
+        """
         if coeff == 0:
             return
 
         new_node = Node(coeff, exp)
 
-        # Handle the case for zero exponents
         if self.head is None or exp > self.head.exp:
             new_node.next = self.head
             self.head = new_node
         else:
             current = self.head
-            prev = None
+            previous = None
             while current and current.exp > exp:
-                prev = current
+                previous = current
                 current = current.next
 
             if current and current.exp == exp:
                 current.coeff += coeff
-                # Remove term if its coefficient becomes zero
                 if current.coeff == 0:
-                    if prev:
-                        prev.next = current.next
+                    if previous:
+                        previous.next = current.next
                     else:
                         self.head = current.next
             else:
                 new_node.next = current
-                if prev:
-                    prev.next = new_node
+                if previous:
+                    previous.next = new_node
                 else:
                     self.head = new_node
 
+
     # Add a polynomial p to the polynomial and return the resulting polynomial as a new linked list.
     def add(self, p):
+        """
+        Adds a polynomial p to the polynomial and returns 
+        the resulting polynomial as a new linked list.
+        """
         result = LinkedList()
-        p1, p2 = self.head, p.head
+        node1 = self.head
+        node2 = p.head
 
-        while p1 or p2:
-            if p1 and (not p2 or p1.exp > p2.exp):
-                result.insert_term(p1.coeff, p1.exp)
-                p1 = p1.next
-            elif p2 and (not p1 or p2.exp > p1.exp):
-                result.insert_term(p2.coeff, p2.exp)
-                p2 = p2.next
-            else:
-                sum_coeff = p1.coeff + p2.coeff
-                if sum_coeff != 0:
-                    result.insert_term(sum_coeff, p1.exp)
-                p1, p2 = p1.next, p2.next
+        while node1 is not None or node2 is not None:
+            if node1 is not None and node2 is not None:
+                if node1.exp > node2.exp:
+                    result.insert_term(node1.coeff, node1.exp)
+                    node1 = node1.next
+                elif node2.exp > node1.exp:
+                    result.insert_term(node2.coeff, node2.exp)
+                    node2 = node2.next
+                else:
+                    sum_coeff = node1.coeff + node2.coeff
+                    if sum_coeff != 0:
+                        result.insert_term(sum_coeff, node1.exp)
+                    node1 = node1.next
+                    node2 = node2.next
+            elif node1 is not None:
+                result.insert_term(node1.coeff, node1.exp)
+                node1 = node1.next
+            elif node2 is not None:
+                result.insert_term(node2.coeff, node2.exp)
+                node2 = node2.next
 
         return result
 
+
     # Multiply a polynomial p with the polynomial and return the product as a new linked list.
     def mult(self, p):
+        """
+        Multiply a polynomial p with the polynomial and return the product as a new linked list.
+        """
         result = LinkedList()
-        p1 = self.head
+        node1 = self.head
 
-        while p1:
-            temp = LinkedList()
-            p2 = p.head
-
-            while p2:
-                temp.insert_term(p1.coeff * p2.coeff, p1.exp + p2.exp)
-                p2 = p2.next
-
-            result = result.add(temp)  # Add intermediate result to the final product.
-            p1 = p1.next
+        while node1:
+            node2 = p.head
+            while node2:
+                result.insert_term(node1.coeff * node2.coeff, node1.exp + node2.exp)
+                node2 = node2.next
+            node1 = node1.next
 
         return result
 
     # Return a string representation of the polynomial.
     def __str__(self):
+        """
+        Return a string representation of the polynomial.
+        """
         if not self.head:
             return ""
 
@@ -196,39 +226,30 @@ class LinkedList:
         return " + ".join(terms)
 
 def main():
-    # Loop through all test files
-    for i in range(12):
-        input_file = f'test_{i}.in'
-        output_file = f'test_{i}.out'
-        
-        if os.path.exists(input_file):
-            print(f"Processing {input_file} -> {output_file}")
-            
-            try:
-                with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
-                    num_terms_p1 = int(infile.readline().strip())
-                    p1 = LinkedList()
-                    for _ in range(num_terms_p1):
-                        coeff, exp = map(int, infile.readline().strip().split())
-                        p1.insert_term(coeff, exp)
+    """
+    Reads the data froma file and creates two polynomials
+    p and q. Returns the sum and product of p and q
+    using a linked list.
+    """
+    n = int(input())
+    p = LinkedList()
+    for _ in range(n):
+        coeff, exp = map(int, input().split())
+        p.insert_term(coeff, exp)
 
-                    num_terms_p2 = int(infile.readline().strip())
-                    p2 = LinkedList()
-                    for _ in range(num_terms_p2):
-                        coeff, exp = map(int, infile.readline().strip().split())
-                        p2.insert_term(coeff, exp)
+    input()
 
-                    sum_result = p1.add(p2)
-                    product_result = p1.mult(p2)
+    m = int(input())
+    q = LinkedList()
+    for _ in range(m):
+        coeff, exp = map(int, input().split())
+        q.insert_term(coeff, exp)
 
-                    outfile.write("Sum of polynomials: " + str(sum_result) + "\n")
-                    outfile.write("Product of polynomials: " + str(product_result) + "\n")
-            
-            except Exception as e:
-                print(f"An error occurred while processing {input_file}: {e}")
-        
-        else:
-            print(f"{input_file} does not exist. Skipping.")
+    sum_poly = p.add(q)
+    product_poly = p.mult(q)
+
+    print(sum_poly)
+    print(product_poly)
 
 if __name__ == "__main__":
     main()
